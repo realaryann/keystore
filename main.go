@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	
 	fmt.Println("KeyStore Server")
 	tcpl, err := net.Listen("tcp", ":6000")
 	if err != nil {
