@@ -5,12 +5,11 @@ import (
 	"io"
 	"net"
 	"os"
-
 	"github.com/realaryann/keystore/resp"
 )
 
 func main() {
-	resp.Resp()
+	
 	fmt.Println("KeyStore Server")
 	tcpl, err := net.Listen("tcp", ":6000")
 	if err != nil {
