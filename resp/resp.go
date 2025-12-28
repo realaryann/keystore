@@ -31,6 +31,21 @@ func NewReader(rd io.Reader) *Resp {
 	return &Resp{reader: bufio.NewReader(rd)}
 }
 
+func (v Value) Serialize() []byte {
+	switch (v.typ) {
+	case "string":
+		v.SerializeStr()
+	case "bulk":
+		v.SerializeBulk()
+	case "null":
+		v.SerializeNull()
+	case "error":
+		v.SerializeErr()
+	case default:
+		return []byte
+
+}
+
 func (r *Resp) Read() (Value, error) {
 	sym, err := r.reader.ReadByte()
 	if err != nil {
@@ -55,11 +70,12 @@ func (r *Resp) ReadArray() (Value, error) {
 	v := Value{}
 	v.typ = "array"
 
-	length, _ = r.ReadInteger()
+	length, _ := r.ReadInteger()
 	v.array = make([]Value, length)
-	for (i := 0; i<length; i++) {
+	
+	for i := 0; i<length; i++ {
 		// Read the resulting parts of the array
-		val, err = r.Read()
+		val, err := r.Read()
 		if err != nil {
 			fmt.Println("Error: err")
 			return v, nil
@@ -71,7 +87,21 @@ func (r *Resp) ReadArray() (Value, error) {
 
 func (r* Resp) ReadBulk() (Value, error) {
 	// TODO
-	return Value{}, nil
+	// Eg: $5\r\nhello\r\n
+	var v Value
+	v.typ = "bulk"
+
+	length, _ := r.ReadInteger()
+
+	bulk := make([]byte, length)
+
+	r.reader.Read(bulk)
+
+	v.bulk = string(bulk)
+
+	r.ReadLine()
+	
+	return v, nil
 }
 
 func (r *Resp) ReadLine() ([]byte, error) {

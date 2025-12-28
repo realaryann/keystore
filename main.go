@@ -10,10 +10,9 @@ import (
 )
 
 func main() {
-	r := strings.NewReader("Hello, Reader 5!")
+	r := strings.NewReader("$5\r\nhello\r\n")
 	obj := resp.NewReader(r)
-	obj.ReadInteger()
-	_ = obj
+	obj.Read()
 	fmt.Println("KeyStore Server")
 	tcpl, err := net.Listen("tcp", ":6000")
 	if err != nil {
