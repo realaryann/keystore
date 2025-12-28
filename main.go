@@ -5,10 +5,15 @@ import (
 	"io"
 	"net"
 	"os"
+	"strings"
 	"github.com/realaryann/keystore/resp"
 )
 
 func main() {
+	r := strings.NewReader("Hello, Reader 5!")
+	obj := resp.NewReader(r)
+	obj.ReadInteger()
+	_ = obj
 	fmt.Println("KeyStore Server")
 	tcpl, err := net.Listen("tcp", ":6000")
 	if err != nil {

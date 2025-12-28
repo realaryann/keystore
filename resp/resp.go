@@ -51,7 +51,22 @@ func (r *Resp) Read() (Value, error) {
 
 func (r *Resp) ReadArray() (Value, error) {
 	// TODO
-	return Value{}, nil
+	// EG: *2\r\n$5\r\nhello\r\n$5\r\nworld\r\n
+	v := Value{}
+	v.typ = "array"
+
+	length, _ = r.ReadInteger()
+	v.array = make([]Value, length)
+	for (i := 0; i<length; i++) {
+		// Read the resulting parts of the array
+		val, err = r.Read()
+		if err != nil {
+			fmt.Println("Error: err")
+			return v, nil
+		}
+		v.array[i] = val
+	}
+	return v, nil
 }
 
 func (r* Resp) ReadBulk() (Value, error) {
