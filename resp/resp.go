@@ -23,8 +23,26 @@ type Value struct {
 	array []Value
 }
 
+type Writer struct {
+	writer io.Writer
+}
+
 type Resp struct {
 	reader *bufio.Reader
+}
+
+func (w *Writer) Write(v Value) {
+	var bytes := v.Serialize()
+
+	_, err := w.writer.Write(bytes)
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+}
+
+func NewWriter(w io.Writer) *Writer {
+	w := Writer{writer: w}
+	return &w
 }
 
 func NewReader(rd io.Reader) *Resp {
