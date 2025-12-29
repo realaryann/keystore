@@ -5,14 +5,10 @@ import (
 	"io"
 	"net"
 	"os"
-	"strings"
 	"github.com/realaryann/keystore/resp"
 )
 
 func main() {
-	r := strings.NewReader("$5\r\nhello\r\n")
-	obj := resp.NewReader(r)
-	obj.Read()
 	fmt.Println("KeyStore Server")
 	tcpl, err := net.Listen("tcp", ":6000")
 	if err != nil {
@@ -28,9 +24,10 @@ func main() {
 
 	// Infinite Loop to answer connections
 	for {
-		buffer := make([]byte, 1024)
+		response := resp.NewReader(conn)	
 
-		_, err = conn.Read(buffer)
+		value, err := response.Read()
+
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -38,8 +35,11 @@ func main() {
 			fmt.Println("Error: ", err.Error())
 			os.Exit(1)
 		}
+		_ = value
+		
+		write := resp.NewWriter(conn)
+		write.Write(resp.Value{Typ: "string", Str: "+OK"})
 
-		conn.Write([]byte("+OK\r\n"))
 	}
 
 }

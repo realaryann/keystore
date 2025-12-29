@@ -16,11 +16,11 @@ const (
 )
 
 type Value struct {
-	typ   string
-	str   string
-	num   int
-	bulk  string
-	array []Value
+	Typ   string
+	Str   string
+	Num   int
+	Bulk  string
+	Array []Value
 }
 
 type Writer struct {
@@ -32,7 +32,7 @@ type Resp struct {
 }
 
 func (w *Writer) Write(v Value) {
-	var bytes := v.Serialize()
+	var bytes = v.Serialize()
 
 	_, err := w.writer.Write(bytes)
 	if err != nil {
@@ -41,8 +41,8 @@ func (w *Writer) Write(v Value) {
 }
 
 func NewWriter(w io.Writer) *Writer {
-	w := Writer{writer: w}
-	return &w
+	tmp := Writer{writer: w}
+	return &tmp
 }
 
 func NewReader(rd io.Reader) *Resp {
@@ -50,7 +50,7 @@ func NewReader(rd io.Reader) *Resp {
 }
 
 func (v Value) Serialize() []byte {
-	switch (v.typ) {
+	switch (v.Typ) {
 	case "array":
 		return v.SerializeArr()
 	case "string":
@@ -68,13 +68,13 @@ func (v Value) Serialize() []byte {
 
 func (v Value) SerializeArr() []byte {
 	var bytes []byte
-	length := len(v.array)
+	length := len(v.Array)
 	bytes = append(bytes, ARRAY)
 	bytes = append(bytes, []byte(strconv.Itoa(length))...)
 	bytes = append(bytes, '\r', '\n')
 	
 	for i := 0; i<length; i++ {
-		bytes = append(bytes, []byte(v.array[i].Serialize())...)
+		bytes = append(bytes, []byte(v.Array[i].Serialize())...)
 	}
 	return bytes
 }
@@ -82,7 +82,7 @@ func (v Value) SerializeArr() []byte {
 func (v Value) SerializeErr() []byte {
 	var bytes []byte
 	bytes = append(bytes, ERROR)
-	bytes = append(bytes, []byte(v.str)...)
+	bytes = append(bytes, []byte(v.Str)...)
 	bytes = append(bytes, '\r', '\n')
 	return bytes
 }
@@ -94,7 +94,7 @@ func (v Value) SerializeNull() []byte {
 func (v Value) SerializeStr() []byte {
 	var bytes []byte
 	bytes = append(bytes, STRING)
-	bytes = append(bytes, []byte(v.str)...)
+	bytes = append(bytes, []byte(v.Str)...)
 	bytes = append(bytes, '\r','\n')
 	return bytes
 }
@@ -102,9 +102,9 @@ func (v Value) SerializeStr() []byte {
 func (v Value) SerializeBulk() []byte {
 	var bytes []byte
 	bytes = append(bytes, BULK)
-	bytes = append(bytes, []byte(strconv.Itoa(len(v.bulk)))...)
+	bytes = append(bytes, []byte(strconv.Itoa(len(v.Bulk)))...)
 	bytes = append(bytes, '\r', '\n')
-	bytes = append(bytes, []byte(v.bulk)...)
+	bytes = append(bytes, []byte(v.Bulk)...)
 	bytes = append(bytes, '\r', '\n')
 	return bytes
 }
@@ -131,19 +131,19 @@ func (r *Resp) ReadArray() (Value, error) {
 	// TODO
 	// EG: *2\r\n$5\r\nhello\r\n$5\r\nworld\r\n
 	v := Value{}
-	v.typ = "array"
+	v.Typ = "array"
 
 	length, _ := r.ReadInteger()
-	v.array = make([]Value, length)
+	v.Array = make([]Value, length)
 	
 	for i := 0; i<length; i++ {
-		// Read the resulting parts of the array
+		// Read the resulting parts of the Array
 		val, err := r.Read()
 		if err != nil {
 			fmt.Println("Error: err")
 			return v, nil
 		}
-		v.array[i] = val
+		v.Array[i] = val
 	}
 	return v, nil
 }
@@ -152,15 +152,15 @@ func (r* Resp) ReadBulk() (Value, error) {
 	// TODO
 	// Eg: $5\r\nhello\r\n
 	var v Value
-	v.typ = "bulk"
+	v.Typ = "bulk"
 
 	length, _ := r.ReadInteger()
 
-	bulk := make([]byte, length)
+	Bulk := make([]byte, length)
 
-	r.reader.Read(bulk)
+	r.reader.Read(Bulk)
 
-	v.bulk = string(bulk)
+	v.Bulk = string(Bulk)
 
 	r.ReadLine()
 	
