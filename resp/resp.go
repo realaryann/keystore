@@ -33,17 +33,62 @@ func NewReader(rd io.Reader) *Resp {
 
 func (v Value) Serialize() []byte {
 	switch (v.typ) {
+	case "array":
+		return v.SerializeArr()
 	case "string":
-		v.SerializeStr()
+		return v.SerializeStr()
 	case "bulk":
-		v.SerializeBulk()
+		return v.SerializeBulk()
 	case "null":
-		v.SerializeNull()
+		return v.SerializeNull()
 	case "error":
-		v.SerializeErr()
-	case default:
-		return []byte
+		return v.SerializeErr()
+	default:
+		return []byte{}
+	}
+}
 
+func (v Value) SerializeArr() []byte {
+	var bytes []byte
+	length := len(v.array)
+	bytes = append(bytes, ARRAY)
+	bytes = append(bytes, []byte(strconv.Itoa(length))...)
+	bytes = append(bytes, '\r', '\n')
+	
+	for i := 0; i<length; i++ {
+		bytes = append(bytes, []byte(v.array[i].Serialize())...)
+	}
+	return bytes
+}
+
+func (v Value) SerializeErr() []byte {
+	var bytes []byte
+	bytes = append(bytes, ERROR)
+	bytes = append(bytes, []byte(v.str)...)
+	bytes = append(bytes, '\r', '\n')
+	return bytes
+}
+
+func (v Value) SerializeNull() []byte {
+	return []byte("$-1\r\n")
+}
+
+func (v Value) SerializeStr() []byte {
+	var bytes []byte
+	bytes = append(bytes, STRING)
+	bytes = append(bytes, []byte(v.str)...)
+	bytes = append(bytes, '\r','\n')
+	return bytes
+}
+
+func (v Value) SerializeBulk() []byte {
+	var bytes []byte
+	bytes = append(bytes, BULK)
+	bytes = append(bytes, []byte(strconv.Itoa(len(v.bulk)))...)
+	bytes = append(bytes, '\r', '\n')
+	bytes = append(bytes, []byte(v.bulk)...)
+	bytes = append(bytes, '\r', '\n')
+	return bytes
 }
 
 func (r *Resp) Read() (Value, error) {
