@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"github.com/realaryann/keystore/resp"
+	"github.com/realaryann/keystore/command"
 )
 
 func main() {
@@ -35,10 +36,12 @@ func main() {
 			fmt.Println("Error: ", err.Error())
 			os.Exit(1)
 		}
-		_ = value
+		
+		
+		command.Process(&value)
 		
 		write := resp.NewWriter(conn)
-		write.Write(resp.Value{Typ: "string", Str: "+OK"})
+		write.Write(value)
 
 	}
 
