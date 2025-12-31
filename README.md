@@ -1,4 +1,4 @@
-<h1> KeyStore: A Redis Clone </h1>
+<h1> KeyStore: A Redis-Server Clone </h1>
 
 <h2> Model: </h2>
 
