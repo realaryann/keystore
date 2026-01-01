@@ -11,6 +11,8 @@ import (
 
 func main() {
 	fmt.Println("KeyStore Server")
+	// Key: [value, timestamp, expiry]
+	cache := make(map[string][]string)
 	tcpl, err := net.Listen("tcp", ":6000")
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -38,10 +40,11 @@ func main() {
 		}
 		
 		
-		command.Process(&value)
+		retval := command.Process(value, cache)
 		
+		fmt.Println(cache)
 		write := resp.NewWriter(conn)
-		write.Write(value)
+		write.Write(retval)
 
 	}
 
