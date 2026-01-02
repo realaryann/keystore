@@ -17,6 +17,20 @@ func HandleInit() resp.Value {
 	return ret
 }
 
+func HandleGet(v resp.Value, cache map[string][]string) resp.Value {
+	ret := resp.Value{}
+	ret.Typ = "string"
+	
+	val, ok := cache[(v.Array[1]).Bulk]
+	// Need to add TTL functionality
+	if ok {
+		ret.Str = val[0]
+	} else {
+		ret.Str = "ERROR"
+	}
+	return ret
+}
+
 func HandleSet(v resp.Value, cache map[string][]string) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "string"
@@ -40,6 +54,8 @@ func Process(v resp.Value, cache map[string][]string) resp.Value {
 			return HandleInit()
 		} else if ival.Bulk == "SET" {
 			return HandleSet(v, cache)
+		} else if ival.Bulk == "GET" {
+			return HandleGet(v, cache)
 		}
 	}
 	return ret

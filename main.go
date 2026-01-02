@@ -42,7 +42,6 @@ func main() {
 		
 		retval := command.Process(value, cache)
 		
-		fmt.Println(cache)
 		write := resp.NewWriter(conn)
 		write.Write(retval)
 
