@@ -6,13 +6,15 @@ import (
 	"net"
 	"os"
 	"github.com/realaryann/keystore/resp"
+	"github.com/realaryann/keystore/cache"
 	"github.com/realaryann/keystore/command"
 )
 
+
 func main() {
-	fmt.Println("KeyStore Server")
 	// Key: [value, timestamp, expiry]
-	cache := make(map[string][]string)
+	c := cache.Cache{Data: make(map[string][]string)}
+	fmt.Println("KeyStore [S]")
 	tcpl, err := net.Listen("tcp", ":6000")
 	if err != nil {
 		fmt.Println("Error: ", err)
@@ -40,7 +42,7 @@ func main() {
 		}
 		
 		
-		retval := command.Process(value, cache)
+		retval := command.Process(value, &c)
 		
 		write := resp.NewWriter(conn)
 		write.Write(retval)

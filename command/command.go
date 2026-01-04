@@ -2,7 +2,7 @@ package command
 
 import ( 
 	"github.com/realaryann/keystore/resp"
-	"time"
+	"github.com/realaryann/keystore/cache"
 	"strings"
 	"strconv"
 )
@@ -19,7 +19,7 @@ func HandleInit() resp.Value {
 	return ret
 }
 
-func HandleExists(v resp.Value, cache map[string][]string) resp.Value {
+func HandleExists(v resp.Value, c *cache.Cache) resp.Value {
 	// EXISTS arrayelements...
 	// Use typ int instead and modify serialize/deserialize
 	ret := resp.Value{}
@@ -27,7 +27,7 @@ func HandleExists(v resp.Value, cache map[string][]string) resp.Value {
 	var cnt int = 1
 	for _, val := range(v.Array) {
 		tkey := val.Bulk
-		_, exists := cache[tkey]
+		_, exists := c.Data[tkey]
 		if exists {
 			cnt++;
 		}
@@ -36,11 +36,11 @@ func HandleExists(v resp.Value, cache map[string][]string) resp.Value {
 	return ret
 }
 
-func HandleGet(v resp.Value, cache map[string][]string) resp.Value {
+func HandleGet(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "string"
 	
-	val, ok := cache[(v.Array[1]).Bulk]
+	val, ok := c.Data[(v.Array[1]).Bulk]
 	// Need to add TTL functionality
 	if ok {
 		ret.Str = val[0]
@@ -48,21 +48,17 @@ func HandleGet(v resp.Value, cache map[string][]string) resp.Value {
 	return ret
 }
 
-func HandleSet(v resp.Value, cache map[string][]string) resp.Value {
+func HandleSet(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "string"
 	ret.Str = "+OK"
 
-	key := (v.Array[1]).Bulk
-	val := (v.Array[2]).Bulk
-	// Value, TS
-	cache[key] = append(cache[key], val)
-	cache[key] = append(cache[key], (time.Now()).Format(time.TimeOnly))
+	c.Add(v)
 
 	return ret
 }
 
-func Process(v resp.Value, cache map[string][]string) resp.Value {
+func Process(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	for _, ival := range v.Array {
 		if strings.ToUpper(ival.Bulk) == "PING" {
@@ -70,11 +66,13 @@ func Process(v resp.Value, cache map[string][]string) resp.Value {
 		} else if strings.ToUpper(ival.Bulk) == "DOCS" {
 			return HandleInit()
 		} else if strings.ToUpper(ival.Bulk) == "SET" {
-			return HandleSet(v, cache)
+			return HandleSet(v, c)
 		} else if strings.ToUpper(ival.Bulk) == "GET" {
-			return HandleGet(v, cache)
+			return HandleGet(v, c)
 		} else if strings.ToUpper(ival.Bulk) == "EXISTS" {
-			return HandleExists(v, cache)
+			return HandleExists(v, c)
+		} else {
+			break
 		}
 	}
 	return ret
