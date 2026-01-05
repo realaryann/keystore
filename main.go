@@ -20,16 +20,24 @@ func main() {
 		fmt.Println("Error: ", err)
 	}
 
-	conn, err := tcpl.Accept()
-	if err != nil {
-		fmt.Println("Error: ", err)
-	}
-
-	defer conn.Close()
-
 	// Infinite Loop to answer connections
 	for {
-		response := resp.NewReader(conn)	
+
+		conn, err := tcpl.Accept()
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+
+		go HandleCon(conn, &c)
+
+	}
+}
+
+func HandleCon(conn net.Conn, c *cache.Cache) {
+	defer conn.Close()
+	response := resp.NewReader(conn)	
+
+	for {
 
 		value, err := response.Read()
 
@@ -38,15 +46,14 @@ func main() {
 				break
 			}
 			fmt.Println("Error: ", err.Error())
-			os.Exit(1)
+			os.Exit(1)	
+
 		}
-		
-		
-		retval := command.Process(value, &c)
-		
+
+		retval := command.Process(value, c)
+			
 		write := resp.NewWriter(conn)
 		write.Write(retval)
-
 	}
 
 }
