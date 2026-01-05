@@ -20,3 +20,11 @@ func (c *Cache) Add(v resp.Value) {
 	c.Data[key] = append(c.Data[key], (time.Now()).Format(time.TimeOnly))
 	c.Mut.Unlock()
 }
+
+func (c * Cache) Del(v resp.Value)  {
+	c.Mut.Lock()
+	for i := range(v.Array) {
+		delete(c.Data, v.Array[i].Bulk)
+	}
+	c.Mut.Unlock()
+}

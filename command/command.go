@@ -58,6 +58,17 @@ func HandleSet(v resp.Value, c *cache.Cache) resp.Value {
 	return ret
 }
 
+func HandleDel(v resp.Value, c *cache.Cache) resp.Value {
+	ret := resp.Value{}
+	ret.Typ = "string"
+	ret.Str = "+OK"
+
+	c.Del(v)
+
+	return ret
+
+}
+
 func Process(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	for _, ival := range v.Array {
@@ -71,6 +82,8 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 			return HandleGet(v, c)
 		} else if strings.ToUpper(ival.Bulk) == "EXISTS" {
 			return HandleExists(v, c)
+		} else if strings.ToUpper(ival.Bulk) == "DEL" {
+			return HandleDel(v, c)
 		} else {
 			break
 		}
