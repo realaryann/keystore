@@ -75,7 +75,7 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 	for _, ival := range v.Array {
 		if strings.ToUpper(ival.Bulk) == "PING" {
 			return HandlePing()
-		} else if strings.ToUpper(ival.Bulk) == "COMMAND" {
+		} else if strings.ToUpper(ival.Bulk) == "COMMAND" || strings.ToUpper(ival.Bulk) == "HELLO"{
 			return HandleInit()
 		} else if strings.ToUpper(ival.Bulk) == "SET" {
 			return HandleSet(v, c)
