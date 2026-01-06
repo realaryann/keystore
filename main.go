@@ -36,11 +36,10 @@ func main() {
 func HandleCon(conn net.Conn, c *cache.Cache) {
 	defer conn.Close()
 	response := resp.NewReader(conn)	
-
+	write := resp.NewWriter(conn)
 	for {
 
 		value, err := response.Read()
-
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -49,10 +48,8 @@ func HandleCon(conn net.Conn, c *cache.Cache) {
 			os.Exit(1)	
 
 		}
-
+		
 		retval := command.Process(value, c)
-			
-		write := resp.NewWriter(conn)
 		write.Write(retval)
 	}
 

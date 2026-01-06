@@ -16,6 +16,8 @@ func HandlePing() resp.Value {
 
 func HandleInit() resp.Value {
 	ret := resp.Value{}
+	ret.Typ = "string"
+	ret.Str = "OK"
 	return ret
 }
 
@@ -51,7 +53,7 @@ func HandleGet(v resp.Value, c *cache.Cache) resp.Value {
 func HandleSet(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "string"
-	ret.Str = "+OK"
+	ret.Str = "OK"
 
 	c.Add(v)
 
@@ -61,12 +63,11 @@ func HandleSet(v resp.Value, c *cache.Cache) resp.Value {
 func HandleDel(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "string"
-	ret.Str = "+OK"
+	ret.Str = "OK"
 
 	c.Del(v)
 
 	return ret
-
 }
 
 func Process(v resp.Value, c *cache.Cache) resp.Value {
@@ -74,7 +75,7 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 	for _, ival := range v.Array {
 		if strings.ToUpper(ival.Bulk) == "PING" {
 			return HandlePing()
-		} else if strings.ToUpper(ival.Bulk) == "DOCS" {
+		} else if strings.ToUpper(ival.Bulk) == "COMMAND" {
 			return HandleInit()
 		} else if strings.ToUpper(ival.Bulk) == "SET" {
 			return HandleSet(v, c)
