@@ -15,17 +15,14 @@ type Cache struct {
 
 
 func (c* Cache) ExpireSet(v resp.Value) {
-	/*
 	c.Mut.Lock()
 	key := (v.Array[1]).Bulk
 	timeslice, _ := strconv.Atoi((v.Array[2]).Bulk)
-	orig := c.Data[key][1]
-	orig = c.Data[key][1].Add(timeslice*time.Second)
-	fmt.Println(c.Data[key][1])
-	fmt.Println(orig)
-	c.Data[key][2] = orig
+	orig, _ := strconv.Atoi(c.Data[key][1])
+	exp := orig+timeslice
+	c.Data[key] = append(c.Data[key], strconv.Itoa(exp))
 	c.Mut.Unlock()
-	*/
+	fmt.Println(c.Data)
 }
 
 func (c *Cache) Add(v resp.Value) {
@@ -35,7 +32,6 @@ func (c *Cache) Add(v resp.Value) {
 	// Value, TS
 	c.Data[key] = append(c.Data[key], val)
 	c.Data[key] = append(c.Data[key], strconv.FormatInt((time.Now().Unix()), 10))
-	fmt.Println(strconv.FormatInt((time.Now().Unix()), 10))
 	c.Mut.Unlock()
 }
 

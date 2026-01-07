@@ -4,7 +4,6 @@ import (
 	"github.com/realaryann/keystore/resp"
 	"github.com/realaryann/keystore/cache"
 	"strings"
-	"fmt"
 	"strconv"
 )
 
@@ -75,11 +74,8 @@ func HandleExpire(v resp.Value, c *cache.Cache, ) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "string"
 	ret.Str = "OK"
-
-	//c.ExpireSet(v)
-
+	c.ExpireSet(v)
 	return ret
-
 }
 
 func Process(v resp.Value, c *cache.Cache) resp.Value {
@@ -98,8 +94,7 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 		} else if strings.ToUpper(ival.Bulk) == "DEL" {
 			return HandleDel(v, c)
 		} else if strings.ToUpper(ival.Bulk) == "EXPIRE" {
-			fmt.Println("debug")
-			//return HandleExpire(v, c)
+			return HandleExpire(v, c)
 		} else {
 			break
 		}
