@@ -22,7 +22,6 @@ func (c* Cache) ExpireSet(v resp.Value) {
 	exp := orig+timeslice
 	c.Data[key] = append(c.Data[key], strconv.Itoa(exp))
 	c.Mut.Unlock()
-	fmt.Println(c.Data)
 }
 
 func (c *Cache) Add(v resp.Value) {
