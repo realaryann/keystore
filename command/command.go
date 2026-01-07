@@ -42,6 +42,9 @@ func HandleGet(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "string"
 	
+	if !c.IsAlive(v) {
+		HandleDel(v, c)
+	}
 	val, ok := c.Data[(v.Array[1]).Bulk]
 	// Need to add TTL functionality
 	if ok {
@@ -70,7 +73,7 @@ func HandleDel(v resp.Value, c *cache.Cache) resp.Value {
 	return ret
 }
 
-func HandleExpire(v resp.Value, c *cache.Cache, ) resp.Value {
+func HandleExpire(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "string"
 	ret.Str = "OK"
@@ -95,6 +98,7 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 			return HandleDel(v, c)
 		} else if strings.ToUpper(ival.Bulk) == "EXPIRE" {
 			return HandleExpire(v, c)
+
 		} else {
 			break
 		}

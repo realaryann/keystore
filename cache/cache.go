@@ -5,7 +5,6 @@ import (
 	"sync"
 	"strconv"
 	"time"
-	"fmt"
 )
 
 type Cache struct {
@@ -34,10 +33,22 @@ func (c *Cache) Add(v resp.Value) {
 	c.Mut.Unlock()
 }
 
-func (c * Cache) Del(v resp.Value)  {
+func (c *Cache) Del(v resp.Value)  {
 	c.Mut.Lock()
 	for i := range(v.Array) {
 		delete(c.Data, v.Array[i].Bulk)
 	}
 	c.Mut.Unlock()
+}
+
+func (c *Cache) IsAlive(v resp.Value) bool {
+	// SET, GET, EXISTS has the key as the data[1] value
+	key := (v.Array[1]).Bulk
+	if len(c.Data[key]) >= 3 {
+		intexpiry, _ := strconv.Atoi(c.Data[key][2])
+		if int(time.Now().Unix()) > intexpiry {
+			return false
+		}
+	}
+	return true
 }
