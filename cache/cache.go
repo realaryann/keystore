@@ -17,8 +17,7 @@ func (c* Cache) ExpireSet(v resp.Value) {
 	c.Mut.Lock()
 	key := (v.Array[1]).Bulk
 	timeslice, _ := strconv.Atoi((v.Array[2]).Bulk)
-	orig, _ := strconv.Atoi(c.Data[key][1])
-	exp := orig+timeslice
+	exp := int(time.Now().Unix())+timeslice
 	c.Data[key] = append(c.Data[key], strconv.Itoa(exp))
 	c.Mut.Unlock()
 }

@@ -57,7 +57,7 @@ func HandleSet(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "string"
 	ret.Str = "OK"
-
+	
 	c.Add(v)
 
 	return ret
