@@ -27,6 +27,10 @@ func (c *Cache) Add(v resp.Value) {
 	c.Mut.Lock()
 	key := (v.Array[1]).Bulk
 	val := (v.Array[2]).Bulk
+	_, ok := c.Data[key]
+	if ok {
+		delete(c.Data, key)
+	}
 	// Value, TS
 	c.Data[key] = append(c.Data[key], val)
 	c.Data[key] = append(c.Data[key], strconv.FormatInt((time.Now().Unix()), 10))
@@ -37,7 +41,7 @@ func (c *Cache) Del(v resp.Value)  {
 	c.Mut.Lock()
 	for i := range(v.Array) {
 		delete(c.Data, v.Array[i].Bulk)
-	}
+	} 
 	c.Mut.Unlock()
 }
 
