@@ -16,9 +16,11 @@ type Cache struct {
 func (c* Cache) ExpireSet(v resp.Value) {
 	c.Mut.Lock()
 	key := (v.Array[1]).Bulk
-	timeslice, _ := strconv.Atoi((v.Array[2]).Bulk)
-	exp := int(time.Now().Unix())+timeslice
-	c.Data[key] = append(c.Data[key], strconv.Itoa(exp))
+	if _, ok := c.Data[key]; ok {
+		timeslice, _ := strconv.Atoi((v.Array[2]).Bulk)
+		exp := int(time.Now().Unix())+timeslice
+		c.Data[key] = append(c.Data[key], strconv.Itoa(exp))
+	}
 	c.Mut.Unlock()
 }
 
