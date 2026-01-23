@@ -13,19 +13,22 @@ type Cache struct {
 }
 
 
-func (c* Cache) ExpireSet(v resp.Value) {
+func (c* Cache) ExpireSet(v resp.Value) int {
 	c.Mut.Lock()
+	defer c.Mut.Unlock()
 	key := (v.Array[1]).Bulk
 	if _, ok := c.Data[key]; ok {
 		timeslice, _ := strconv.Atoi((v.Array[2]).Bulk)
 		exp := int(time.Now().Unix())+timeslice
 		c.Data[key] = append(c.Data[key], strconv.Itoa(exp))
+		return 1
 	}
-	c.Mut.Unlock()
+	return 0
 }
 
 func (c *Cache) Add(v resp.Value) {
 	c.Mut.Lock()
+	defer c.Mut.Unlock()
 	key := (v.Array[1]).Bulk
 	val := (v.Array[2]).Bulk
 	_, ok := c.Data[key]
@@ -35,15 +38,14 @@ func (c *Cache) Add(v resp.Value) {
 	// Value, TS
 	c.Data[key] = append(c.Data[key], val)
 	c.Data[key] = append(c.Data[key], strconv.FormatInt((time.Now().Unix()), 10))
-	c.Mut.Unlock()
 }
 
 func (c *Cache) Del(v resp.Value)  {
 	c.Mut.Lock()
+	c.Mut.Unlock()
 	for i := range(v.Array) {
 		delete(c.Data, v.Array[i].Bulk)
 	} 
-	c.Mut.Unlock()
 }
 
 func (c *Cache) IsAlive(v resp.Value) bool {

@@ -60,11 +60,21 @@ func (v Value) Serialize() []byte {
 		return v.SerializeBulk()
 	case "null":
 		return v.SerializeNull()
+	case "integer":
+		return v.SerializeInteger()
 	case "error":
 		return v.SerializeErr()
 	default:
 		return []byte{}
 	}
+}
+
+func (v Value) SerializeInteger() []byte {
+	var bytes []byte
+	bytes = append(bytes, INTEGER)
+	bytes = append(bytes, []byte(strconv.Itoa(v.Num))...)
+	bytes = append(bytes, '\r', '\n')
+	return bytes
 }
 
 func (v Value) SerializeArr() []byte {

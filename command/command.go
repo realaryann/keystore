@@ -75,9 +75,8 @@ func HandleDel(v resp.Value, c *cache.Cache) resp.Value {
 
 func HandleExpire(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
-	ret.Typ = "string"
-	ret.Str = "OK"
-	c.ExpireSet(v)
+	ret.Typ = "integer"
+	ret.Num = c.ExpireSet(v)
 	return ret
 }
 
