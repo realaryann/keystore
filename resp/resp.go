@@ -112,8 +112,10 @@ func (v Value) SerializeBulk() []byte {
 
 func (r *Resp) Read() (Value, error) {
 	sym, err := r.reader.ReadByte()
-	if err != nil {
-		fmt.Println("Error: ", err)
+	if err != nil  {
+		if err != io.EOF {
+			fmt.Println("Error: ", err)
+		}
 		return Value{}, err
 	}
 	switch sym {

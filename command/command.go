@@ -81,6 +81,12 @@ func HandleExpire(v resp.Value, c *cache.Cache) resp.Value {
 	return ret
 }
 
+func HandleBench() resp.Value {
+	ret := resp.Value{}
+	ret.Typ = "array"
+	return ret
+}
+
 func Process(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	for _, ival := range v.Array {
@@ -88,6 +94,8 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 			return HandlePing()
 		} else if strings.ToUpper(ival.Bulk) == "COMMAND" || strings.ToUpper(ival.Bulk) == "HELLO" {
 			return HandleInit()
+		} else if strings.ToUpper(ival.Bulk) == "CONFIG" {
+			return HandleBench()
 		} else if strings.ToUpper(ival.Bulk) == "SET" {
 			return HandleSet(v, c)
 		} else if strings.ToUpper(ival.Bulk) == "GET" {

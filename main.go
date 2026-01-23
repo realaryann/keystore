@@ -48,7 +48,6 @@ func HandleCon(conn net.Conn, c *cache.Cache) {
 			os.Exit(1)	
 
 		}
-		
 		retval := command.Process(value, c)
 		write.Write(retval)
 	}
