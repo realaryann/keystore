@@ -4,7 +4,6 @@ import (
 	"github.com/realaryann/keystore/resp"
 	"github.com/realaryann/keystore/cache"
 	"strings"
-	"strconv"
 )
 
 func HandlePing() resp.Value {
@@ -25,7 +24,7 @@ func HandleExists(v resp.Value, c *cache.Cache) resp.Value {
 	// EXISTS arrayelements...
 	// Use typ int instead and modify serialize/deserialize
 	ret := resp.Value{}
-	ret.Typ = "string"
+	ret.Typ = "integer"
 	var cnt int = 1
 	for _, val := range(v.Array) {
 		tkey := val.Bulk
@@ -34,7 +33,7 @@ func HandleExists(v resp.Value, c *cache.Cache) resp.Value {
 			cnt++;
 		}
 	}
-	ret.Str = strconv.Itoa(cnt-1)
+	ret.Num = cnt-1
 	return ret
 }
 
