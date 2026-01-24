@@ -65,10 +65,9 @@ func HandleSet(v resp.Value, c *cache.Cache) resp.Value {
 
 func HandleDel(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
-	ret.Typ = "string"
-	ret.Str = "OK"
+	ret.Typ = "integer"
 
-	c.Del(v)
+	ret.Num = c.Del(v)
 
 	return ret
 }

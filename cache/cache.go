@@ -40,12 +40,18 @@ func (c *Cache) Add(v resp.Value) {
 	c.Data[key] = append(c.Data[key], strconv.FormatInt((time.Now().Unix()), 10))
 }
 
-func (c *Cache) Del(v resp.Value)  {
+func (c *Cache) Del(v resp.Value) int {
 	c.Mut.Lock()
-	c.Mut.Unlock()
+	defer c.Mut.Unlock()
+	cnt := 0
 	for i := range(v.Array) {
-		delete(c.Data, v.Array[i].Bulk)
+		_, ok := c.Data[v.Array[i].Bulk]
+		if ok {
+			delete(c.Data, v.Array[i].Bulk)
+			cnt++
+		}
 	} 
+	return cnt
 }
 
 func (c *Cache) IsAlive(v resp.Value) bool {
