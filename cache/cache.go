@@ -50,6 +50,16 @@ func (c *Cache) HAdd(v resp.Value) int {
 
 }
 
+func (c *Cache) HGet(v resp.Value) string {
+	// HGET key field
+	key := (v.Array[1]).Bulk
+	field := (v.Array[2]).Bulk
+	if c.HData[key] == nil  {
+		return "ERROR"
+	}
+	return c.HData[key][field][0]
+}
+
 func (c *Cache) Add(v resp.Value) {
 	c.Mut.Lock()
 	defer c.Mut.Unlock()

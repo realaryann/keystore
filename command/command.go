@@ -91,6 +91,14 @@ func HandleHset(v resp.Value, c *cache.Cache) resp.Value {
 	return ret
 }
 
+func HandleHget(v resp.Value, c *cache.Cache) resp.Value {
+	ret := resp.Value{}
+	ret.Typ = "bulk"
+	ret.Bulk = c.HGet(v)
+	return ret
+
+}
+
 func Process(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	for _, ival := range v.Array {
@@ -112,6 +120,8 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 			return HandleExpire(v, c)
 		} else if strings.ToUpper(ival.Bulk) == "HSET" {
 			return HandleHset(v, c)	
+		} else if strings.ToUpper(ival.Bulk) == "HGET" {
+			return HandleHget(v, c)	
 		} else {
 			break
 		}
