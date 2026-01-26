@@ -10,6 +10,7 @@ import (
 type Cache struct {
 	Mut sync.Mutex
 	Data map[string][]string
+	HData map[string]map[string][]string
 }
 
 
@@ -24,6 +25,29 @@ func (c* Cache) ExpireSet(v resp.Value) int {
 		return 1
 	}
 	return 0
+}
+
+func (c *Cache) HAdd(v resp.Value) int {
+	c.Mut.Lock()
+	defer c.Mut.Unlock()
+	key := (v.Array[1]).Bulk
+	// Check if a key already exists, error.
+	if _, ok := c.Data[key]; ok {
+		return -1
+	}
+	// HSET key field value.. field value.. field value
+	if c.HData[key] == nil {
+		c.HData[key] = make(map[string][]string)
+	}
+	cnt := 0
+	for i := 2; i<len(v.Array)-1; i+=2 {
+		field := (v.Array[i]).Bulk
+		val := (v.Array[i+1]).Bulk
+		c.HData[key][field] = append(c.HData[key][field], val)
+		cnt++
+	}
+	return cnt
+
 }
 
 func (c *Cache) Add(v resp.Value) {

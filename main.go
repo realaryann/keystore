@@ -13,7 +13,7 @@ import (
 
 func main() {
 	// Key: [value, timestamp, expiry]
-	c := cache.Cache{Data: make(map[string][]string)}
+	c := cache.Cache{Data: make(map[string][]string), HData: make(map[string]map[string][]string)}
 	fmt.Println("KeyStore [S]")
 	tcpl, err := net.Listen("tcp", ":6000")
 	if err != nil {

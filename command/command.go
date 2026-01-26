@@ -84,6 +84,13 @@ func HandleBench() resp.Value {
 	return ret
 }
 
+func HandleHset(v resp.Value, c *cache.Cache) resp.Value {
+	ret := resp.Value{}
+	ret.Typ = "integer"
+	ret.Num = c.HAdd(v)
+	return ret
+}
+
 func Process(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	for _, ival := range v.Array {
@@ -103,7 +110,8 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 			return HandleDel(v, c)
 		} else if strings.ToUpper(ival.Bulk) == "EXPIRE" {
 			return HandleExpire(v, c)
-
+		} else if strings.ToUpper(ival.Bulk) == "HSET" {
+			return HandleHset(v, c)	
 		} else {
 			break
 		}
