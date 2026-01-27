@@ -8,14 +8,18 @@ import (
 	"github.com/realaryann/keystore/resp"
 	"github.com/realaryann/keystore/cache"
 	"github.com/realaryann/keystore/command"
+	"github.com/realaryann/keystore/parse"
+
 )
 
 
 func main() {
 	// Key: [value, timestamp, expiry]
+	port := parse.Parse()
+	*port = ":"+*port
 	c := cache.Cache{Data: make(map[string][]string), HData: make(map[string]map[string][]string)}
 	fmt.Println("KeyStore [S]")
-	tcpl, err := net.Listen("tcp", ":6000")
+	tcpl, err := net.Listen("tcp", *port)
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
