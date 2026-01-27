@@ -3,3 +3,8 @@
 <h2> Model: </h2>
 
 <img width="1536" height="1024" alt="img" src="https://github.com/user-attachments/assets/cd581988-3b3f-4828-8625-9007ecd3a057" />
+
+<h2> Info </h2>
+<ul>
+<li> Start keystore server using "go run main.go"
+<li> By default, the application uses port 6000 (custom port wip)
