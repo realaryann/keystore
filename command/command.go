@@ -39,16 +39,8 @@ func HandleExists(v resp.Value, c *cache.Cache) resp.Value {
 
 func HandleGet(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
-	ret.Typ = "string"
-	
-	if !c.IsAlive(v) {
-		HandleDel(v, c)
-	}
-	val, ok := c.Data[(v.Array[1]).Bulk]
-	// Need to add TTL functionality
-	if ok {
-		ret.Str = val[0]
-	}
+	ret.Typ = "bulk"
+	ret.Bulk = c.Get(v)
 	return ret
 }
 

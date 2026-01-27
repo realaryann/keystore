@@ -8,7 +8,7 @@ import (
 )
 
 type Cache struct {
-	Mut sync.Mutex
+	Mut sync.RWMutex
 	Data map[string][]string
 	HData map[string]map[string][]string
 }
@@ -52,12 +52,31 @@ func (c *Cache) HAdd(v resp.Value) int {
 
 func (c *Cache) HGet(v resp.Value) string {
 	// HGET key field
+	c.Mut.RLock()
+	defer c.Mut.RUnlock()
 	key := (v.Array[1]).Bulk
 	field := (v.Array[2]).Bulk
 	if c.HData[key] == nil  {
 		return "ERROR"
 	}
 	return c.HData[key][field][0]
+}
+
+func (c *Cache) Get(v resp.Value) string {
+	c.Mut.RLock()
+	defer c.Mut.RUnlock()
+	if !c.IsAlive(v) {
+		c.Mut.RUnlock()
+		c.Del(v)
+		c.Mut.RLock()
+	}
+	val, ok := c.Data[(v.Array[1]).Bulk]
+	// Need to add TTL functionality
+	if ok {
+		return val[0]
+	} else {
+		return ""
+	}
 }
 
 func (c *Cache) Add(v resp.Value) {
@@ -90,6 +109,8 @@ func (c *Cache) Del(v resp.Value) int {
 
 func (c *Cache) IsAlive(v resp.Value) bool {
 	// SET, GET, EXISTS has the key as the data[1] value
+	c.Mut.RLock()
+	defer c.Mut.RUnlock()
 	key := (v.Array[1]).Bulk
 	if len(c.Data[key]) >= 3 {
 		intexpiry, _ := strconv.Atoi(c.Data[key][2])
