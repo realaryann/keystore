@@ -16,6 +16,7 @@ KeyStore is a mock-up redis server that is capable of managing concurrent client
 | `PING/HELLO` | `PING the server and get a demo response` | 
 
 <h3>Build Instructions</h3>
+
 ```go
     go build -o keystore main.go
     ./keystore
