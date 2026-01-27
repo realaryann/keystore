@@ -3,7 +3,7 @@
 <h2> Info </h2>
 KeyStore is a mock-up redis server that is capable of managing concurrent clients on a network. It utilizes a custom implementation of the RESP protocol over TCP which works natively with redis-cli. 
 
-Supported Commands (Jan 2026)
+<h3>Supported Commands (Jan 2026)</h3>
 
 | Command | Description  |
 | :-------- | :------- | 
@@ -15,11 +15,12 @@ Supported Commands (Jan 2026)
 | `DEL` | `DELETE a key from KeyStore` | 
 | `PING/HELLO` | `PING the server and get a demo response` | 
 
+<h3>Build Instructions</h3>
 ```go
     go build -o keystore main.go
     ./keystore
 ```
-CLI Arguments
+<h3>CLI Arguments</h3>
 
 | Options | Type     | Description                |
 | :-------- | :------- | :------------------------- |
