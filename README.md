@@ -15,6 +15,12 @@ KeyStore is a mock-up redis server that is capable of managing concurrent client
 | `DEL` | `DELETE a key from KeyStore` | 
 | `PING/HELLO` | `PING the server and get a demo response` | 
 
+<h3>Upcoming Updates</h3>
+<ol>
+    <li> INCR key </li>
+    <li> DECR key </li>
+</ol>
+
 <h3>Build Instructions</h3>
 
 ```go
