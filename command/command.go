@@ -90,17 +90,27 @@ func HandleHget(v resp.Value, c *cache.Cache) resp.Value {
 	return ret
 }
 
-func HandleIncr(v resp.Value, c *cache.Cache) resp.Value {
+func HandleIncr(v resp.Value, c *cache.Cache, mode int) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "integer"
-	ret.Num = c.Incr(v)
+	switch mode {
+	case 0:
+		ret.Num = c.Incr(v)
+	case 1:
+		ret.Num = c.IncrBy(v)
+	} 
 	return ret
 }
 
-func HandleDecr(v resp.Value, c *cache.Cache) resp.Value {
+func HandleDecr(v resp.Value, c *cache.Cache, mode int) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "integer"
-	ret.Num = c.Decr(v)
+	switch mode {
+	case 0:
+		ret.Num = c.Decr(v)
+	case 1:
+		ret.Num = c.DecrBy(v)
+	} 
 	return ret
 }
 
@@ -131,13 +141,16 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 		case "HGET":
 			return HandleHget(v, c)
 		case "INCR":
-			return HandleIncr(v, c)
+			return HandleIncr(v, c, 0)
 		case "DECR":
-			return HandleDecr(v, c)
+			return HandleDecr(v, c, 0)
+		case "INCRBY":
+			return HandleIncr(v, c, 1)
+		case "DECRBY":
+			return HandleDecr(v, c, 1)
 		default:
 			break
 		}
-		
 	}
 	return ret
 }

@@ -96,6 +96,42 @@ func (c *Cache) Decr(v resp.Value) int {
 	return newv
 }
 
+func (c *Cache) IncrBy(v resp.Value) int {
+	c.Mut.Lock()
+	defer c.Mut.Unlock()
+	key := (v.Array[1]).Bulk
+	inc, _ := strconv.Atoi((v.Array[2]).Bulk)
+	// If Key NOT in cache, create it and add 1.
+	val, ok := c.Data[key]
+	newv := inc
+	if ok {
+		tmp, _ := strconv.Atoi(val[0])
+		delete(c.Data, key)
+		newv = tmp+inc
+	} 
+	c.Data[key] = append(c.Data[key], strconv.Itoa(newv))
+	c.Data[key] = append(c.Data[key], strconv.FormatInt((time.Now().Unix()), 10))
+	return newv
+}
+
+func (c *Cache) DecrBy(v resp.Value) int {
+	c.Mut.Lock()
+	defer c.Mut.Unlock()
+	key := (v.Array[1]).Bulk
+	dec, _ := strconv.Atoi((v.Array[2]).Bulk)
+	// If Key NOT in cache, create it and add 1.
+	val, ok := c.Data[key]
+	newv := dec
+	if ok {
+		tmp, _ := strconv.Atoi(val[0])
+		delete(c.Data, key)
+		newv = tmp-dec
+	} 
+	c.Data[key] = append(c.Data[key], strconv.Itoa(newv))
+	c.Data[key] = append(c.Data[key], strconv.FormatInt((time.Now().Unix()), 10))
+	return newv
+}
+
 func (c *Cache) Get(v resp.Value) string {
 	c.Mut.RLock()
 	defer c.Mut.RUnlock()
