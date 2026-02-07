@@ -107,33 +107,37 @@ func HandleDecr(v resp.Value, c *cache.Cache) resp.Value {
 func Process(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	for _, ival := range v.Array {
-		if strings.ToUpper(ival.Bulk) == "PING" {
+		switch(strings.ToUpper(ival.Bulk)) {
+		case "PING":
 			return HandlePing()
-		} else if strings.ToUpper(ival.Bulk) == "COMMAND" || strings.ToUpper(ival.Bulk) == "HELLO" {
+		case "COMMAND":
 			return HandleInit()
-		} else if strings.ToUpper(ival.Bulk) == "CONFIG" {
+		case "HELLO":
+			return HandleInit()
+		case "CONFIG":
 			return HandleBench()
-		} else if strings.ToUpper(ival.Bulk) == "SET" {
+		case "SET":
 			return HandleSet(v, c)
-		} else if strings.ToUpper(ival.Bulk) == "GET" {
+		case "GET":
 			return HandleGet(v, c)
-		} else if strings.ToUpper(ival.Bulk) == "EXISTS" {
+		case "EXISTS":
 			return HandleExists(v, c)
-		} else if strings.ToUpper(ival.Bulk) == "DEL" {
+		case "DEL":
 			return HandleDel(v, c)
-		} else if strings.ToUpper(ival.Bulk) == "EXPIRE" {
+		case "EXPIRE":
 			return HandleExpire(v, c)
-		} else if strings.ToUpper(ival.Bulk) == "HSET" {
-			return HandleHset(v, c)	
-		} else if strings.ToUpper(ival.Bulk) == "HGET" {
-			return HandleHget(v, c)	
-		} else if strings.ToUpper(ival.Bulk) == "INCR" {
-			return HandleIncr(v, c)	
-		} else if strings.ToUpper(ival.Bulk) == "DECR" {
-			return HandleDecr(v, c)	
-		} else {
+		case "HSET":
+			return HandleHset(v, c)
+		case "HGET":
+			return HandleHget(v, c)
+		case "INCR":
+			return HandleIncr(v, c)
+		case "DECR":
+			return HandleDecr(v, c)
+		default:
 			break
 		}
+		
 	}
 	return ret
 }
