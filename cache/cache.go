@@ -62,6 +62,40 @@ func (c *Cache) HGet(v resp.Value) string {
 	return c.HData[key][field][0]
 }
 
+func (c *Cache) Incr(v resp.Value) int {
+	c.Mut.Lock()
+	defer c.Mut.Unlock()
+	key := (v.Array[1]).Bulk
+	// If Key NOT in cache, create it and add 1.
+	val, ok := c.Data[key]
+	newv := 1
+	if ok {
+		tmp, _ := strconv.Atoi(val[0])
+		delete(c.Data, key)
+		newv = tmp+1
+	} 
+	c.Data[key] = append(c.Data[key], strconv.Itoa(newv))
+	c.Data[key] = append(c.Data[key], strconv.FormatInt((time.Now().Unix()), 10))
+	return newv
+}
+
+func (c *Cache) Decr(v resp.Value) int {
+	c.Mut.Lock()
+	defer c.Mut.Unlock()
+	key := (v.Array[1]).Bulk
+	// If Key NOT in cache, create it and add 1.
+	val, ok := c.Data[key]
+	newv := -1
+	if ok {
+		tmp, _ := strconv.Atoi(val[0])
+		delete(c.Data, key)
+		newv = tmp-1
+	} 
+	c.Data[key] = append(c.Data[key], strconv.Itoa(newv))
+	c.Data[key] = append(c.Data[key], strconv.FormatInt((time.Now().Unix()), 10))
+	return newv
+}
+
 func (c *Cache) Get(v resp.Value) string {
 	c.Mut.RLock()
 	defer c.Mut.RUnlock()

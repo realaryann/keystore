@@ -88,7 +88,20 @@ func HandleHget(v resp.Value, c *cache.Cache) resp.Value {
 	ret.Typ = "bulk"
 	ret.Bulk = c.HGet(v)
 	return ret
+}
 
+func HandleIncr(v resp.Value, c *cache.Cache) resp.Value {
+	ret := resp.Value{}
+	ret.Typ = "integer"
+	ret.Num = c.Incr(v)
+	return ret
+}
+
+func HandleDecr(v resp.Value, c *cache.Cache) resp.Value {
+	ret := resp.Value{}
+	ret.Typ = "integer"
+	ret.Num = c.Decr(v)
+	return ret
 }
 
 func Process(v resp.Value, c *cache.Cache) resp.Value {
@@ -114,6 +127,10 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 			return HandleHset(v, c)	
 		} else if strings.ToUpper(ival.Bulk) == "HGET" {
 			return HandleHget(v, c)	
+		} else if strings.ToUpper(ival.Bulk) == "INCR" {
+			return HandleIncr(v, c)	
+		} else if strings.ToUpper(ival.Bulk) == "DECR" {
+			return HandleDecr(v, c)	
 		} else {
 			break
 		}

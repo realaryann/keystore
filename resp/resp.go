@@ -13,7 +13,7 @@ const (
 	INTEGER = ':'
 	BULK    = '$'
 	ARRAY   = '*'
-	
+
 )
 
 type Value struct {
