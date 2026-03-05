@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"container/list"
 	"github.com/realaryann/keystore/resp"
 	"github.com/realaryann/keystore/cache"
 	"github.com/realaryann/keystore/command"
@@ -15,7 +16,7 @@ func main() {
 	// Key: [value, timestamp, expiry]
 	port := parse.Parse()
 	*port = ":"+*port
-	c := cache.Cache{Data: make(map[string][]string), HData: make(map[string]map[string][]string)}
+	c := cache.Cache{Data: make(map[string][]string), HData: make(map[string]map[string][]string), LData: make(map[string]*list.List)}
 	fmt.Println("KeyStore [S]")
 	tcpl, err := net.Listen("tcp", *port)
 	if err != nil {
