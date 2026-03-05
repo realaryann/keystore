@@ -1,9 +1,10 @@
 package command
 
-import ( 
-	"github.com/realaryann/keystore/resp"
-	"github.com/realaryann/keystore/cache"
+import (
 	"strings"
+
+	"github.com/realaryann/keystore/cache"
+	"github.com/realaryann/keystore/resp"
 )
 
 func HandlePing() resp.Value {
@@ -26,14 +27,14 @@ func HandleExists(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "integer"
 	var cnt int = 1
-	for _, val := range(v.Array) {
+	for _, val := range v.Array {
 		tkey := val.Bulk
 		_, exists := c.Data[tkey]
 		if exists {
-			cnt++;
+			cnt++
 		}
 	}
-	ret.Num = cnt-1
+	ret.Num = cnt - 1
 	return ret
 }
 
@@ -48,7 +49,7 @@ func HandleSet(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	ret.Typ = "string"
 	ret.Str = "OK"
-	
+
 	c.Add(v)
 
 	return ret
@@ -98,7 +99,7 @@ func HandleIncr(v resp.Value, c *cache.Cache, mode int) resp.Value {
 		ret.Num = c.Incr(v)
 	case 1:
 		ret.Num = c.IncrBy(v)
-	} 
+	}
 	return ret
 }
 
@@ -110,14 +111,21 @@ func HandleDecr(v resp.Value, c *cache.Cache, mode int) resp.Value {
 		ret.Num = c.Decr(v)
 	case 1:
 		ret.Num = c.DecrBy(v)
-	} 
+	}
+	return ret
+}
+
+func HandleLPush(v resp.Value, c *cache.Cache) resp.Value {
+	ret := resp.Value{}
+	ret.Typ = "integer"
+	ret.Num = c.LPush(v)
 	return ret
 }
 
 func Process(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	for _, ival := range v.Array {
-		switch(strings.ToUpper(ival.Bulk)) {
+		switch strings.ToUpper(ival.Bulk) {
 		case "PING":
 			return HandlePing()
 		case "COMMAND":
@@ -148,6 +156,8 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 			return HandleIncr(v, c, 1)
 		case "DECRBY":
 			return HandleDecr(v, c, 1)
+		case "LPUSH":
+			return HandleLPush(v, c)
 		default:
 			break
 		}
