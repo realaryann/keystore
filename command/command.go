@@ -122,6 +122,13 @@ func HandleLPush(v resp.Value, c *cache.Cache) resp.Value {
 	return ret
 }
 
+func HandleRPush(v resp.Value, c *cache.Cache) resp.Value {
+	ret := resp.Value{}
+	ret.Typ = "integer"
+	ret.Num = c.RPush(v)
+	return ret
+}
+
 func Process(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	for _, ival := range v.Array {
@@ -158,6 +165,8 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 			return HandleDecr(v, c, 1)
 		case "LPUSH":
 			return HandleLPush(v, c)
+		case "RPUSH":
+			return HandleRPush(v, c)
 		default:
 			break
 		}

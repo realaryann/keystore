@@ -16,6 +16,19 @@ type Cache struct {
 	LData map[string]*list.List
 }
 
+func (c *Cache) RPush(v resp.Value) int {
+	c.Mut.Lock()
+	defer c.Mut.Unlock()
+	lname := (v.Array[1]).Bulk
+	val := (v.Array[2]).Bulk
+	_, exists := c.LData[lname]
+	if !exists {
+		c.LData[lname] = list.New()
+	}
+	c.LData[lname].PushBack(val)
+	return c.LData[lname].Len()
+}
+
 func (c *Cache) LPush(v resp.Value) int {
 	c.Mut.Lock()
 	defer c.Mut.Unlock()
