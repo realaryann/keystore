@@ -16,6 +16,16 @@ type Cache struct {
 	LData map[string]*list.List
 }
 
+func (c *Cache) LPop(v resp.Value, mode string) (string, []resp.Value) {
+	c.Mut.Lock()
+	defer c.Mut.Unlock()
+	var bstring string
+	barr := []resp.Value{}
+	_ = mode
+	return bstring, barr
+
+}
+
 func (c *Cache) RPush(v resp.Value) int {
 	c.Mut.Lock()
 	defer c.Mut.Unlock()

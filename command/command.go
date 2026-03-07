@@ -2,7 +2,6 @@ package command
 
 import (
 	"strings"
-
 	"github.com/realaryann/keystore/cache"
 	"github.com/realaryann/keystore/resp"
 )
@@ -129,6 +128,19 @@ func HandleRPush(v resp.Value, c *cache.Cache) resp.Value {
 	return ret
 }
 
+func HandleLPop(v resp.Value, c *cache.Cache) resp.Value {
+	ret := resp.Value{}
+	if len(v.Array) == 2 {
+		ret.Typ = "bulk"
+		ret.Bulk, _ = c.LPop(v, "s")
+
+	} else if len(v.Array) > 2 {
+		ret.Typ = "array"
+		_, ret.Array = c.LPop(v, "a")
+	}
+	return ret
+}
+
 func Process(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	for _, ival := range v.Array {
@@ -167,6 +179,8 @@ func Process(v resp.Value, c *cache.Cache) resp.Value {
 			return HandleLPush(v, c)
 		case "RPUSH":
 			return HandleRPush(v, c)
+		case "LPOP":
+			return HandleLPop(v, c)
 		default:
 			break
 		}
