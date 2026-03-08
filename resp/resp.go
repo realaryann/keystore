@@ -87,6 +87,7 @@ func (v Value) SerializeArr() []byte {
 	for i := 0; i<length; i++ {
 		bytes = append(bytes, []byte(v.Array[i].Serialize())...)
 	}
+	fmt.Println("Hi")
 	return bytes
 }
 

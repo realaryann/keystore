@@ -132,11 +132,25 @@ func HandleLPop(v resp.Value, c *cache.Cache) resp.Value {
 	ret := resp.Value{}
 	if len(v.Array) == 2 {
 		ret.Typ = "bulk"
-		ret.Bulk, _ = c.LPop(v, "s")
-
-	} else if len(v.Array) > 2 {
+		tbulk, _, ok := c.LPop(v, "s")
+		if !ok {
+			ret.Typ = "bulk"
+			ret.Bulk = "-1"	
+		} else {
+			ret.Bulk = tbulk
+		}
+	} else if len(v.Array) == 3 {
 		ret.Typ = "array"
-		_, ret.Array = c.LPop(v, "a")
+		_, tarr, ok := c.LPop(v, "a")
+		if !ok {
+			ret.Typ = "bulk"
+			ret.Bulk = "-1"	
+		} else {
+			ret.Array = tarr
+		}
+	} else {
+		ret.Typ = "bulk"
+		ret.Bulk = "-1"
 	}
 	return ret
 }
