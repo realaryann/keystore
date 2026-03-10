@@ -1,9 +1,9 @@
 package resp
 
 import (
-	"io"
 	"bufio"
 	"fmt"
+	"io"
 	"strconv"
 )
 
@@ -13,7 +13,6 @@ const (
 	INTEGER = ':'
 	BULK    = '$'
 	ARRAY   = '*'
-
 )
 
 type Value struct {
@@ -51,7 +50,7 @@ func NewReader(rd io.Reader) *Resp {
 }
 
 func (v Value) Serialize() []byte {
-	switch (v.Typ) {
+	switch v.Typ {
 	case "array":
 		return v.SerializeArr()
 	case "string":
@@ -83,11 +82,10 @@ func (v Value) SerializeArr() []byte {
 	bytes = append(bytes, ARRAY)
 	bytes = append(bytes, []byte(strconv.Itoa(length))...)
 	bytes = append(bytes, '\r', '\n')
-	
-	for i := 0; i<length; i++ {
+
+	for i := 0; i < length; i++ {
 		bytes = append(bytes, []byte(v.Array[i].Serialize())...)
 	}
-	fmt.Println("Hi")
 	return bytes
 }
 
@@ -107,7 +105,7 @@ func (v Value) SerializeStr() []byte {
 	var bytes []byte
 	bytes = append(bytes, STRING)
 	bytes = append(bytes, []byte(v.Str)...)
-	bytes = append(bytes, '\r','\n')
+	bytes = append(bytes, '\r', '\n')
 	return bytes
 }
 
@@ -123,7 +121,7 @@ func (v Value) SerializeBulk() []byte {
 
 func (r *Resp) Read() (Value, error) {
 	sym, err := r.reader.ReadByte()
-	if err != nil  {
+	if err != nil {
 		if err != io.EOF {
 			fmt.Println("Error: ", err)
 		}
@@ -149,8 +147,8 @@ func (r *Resp) ReadArray() (Value, error) {
 
 	length, _ := r.ReadInteger()
 	v.Array = make([]Value, length)
-	
-	for i := 0; i<length; i++ {
+
+	for i := 0; i < length; i++ {
 		// Read the resulting parts of the Array
 		val, err := r.Read()
 		if err != nil {
@@ -162,7 +160,7 @@ func (r *Resp) ReadArray() (Value, error) {
 	return v, nil
 }
 
-func (r* Resp) ReadBulk() (Value, error) {
+func (r *Resp) ReadBulk() (Value, error) {
 	// TODO
 	// Eg: $5\r\nhello\r\n
 	var v Value
@@ -177,7 +175,7 @@ func (r* Resp) ReadBulk() (Value, error) {
 	v.Bulk = string(Bulk)
 
 	r.ReadLine()
-	
+
 	return v, nil
 }
 
