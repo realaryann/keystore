@@ -15,6 +15,35 @@ type Cache struct {
 	LData map[string]*list.List
 }
 
+func (c *Cache) RPop(v resp.Value, mode string) (string, []resp.Value, bool) {
+	c.Mut.Lock()
+	defer c.Mut.Unlock()
+	barr := []resp.Value{}
+	lname := (v.Array[1]).Bulk
+	_, exists := c.LData[lname]
+	if !exists {
+		return "",barr,false
+	}
+	if mode == "s" {
+		tstring := c.LData[lname].Back()
+		if tstring != nil {
+			c.LData[lname].Remove(tstring)
+		}
+		return tstring.Value.(string), barr, true
+	} else if mode == "a" {
+		length, _ := strconv.Atoi((v.Array[2]).Bulk)
+		for cnt:= 0; cnt < length; cnt++ {
+			tstring := c.LData[lname].Back()
+			if tstring != nil {
+				c.LData[lname].Remove(tstring)
+				barr = append(barr, resp.Value{Typ: "bulk", Bulk: tstring.Value.(string)})
+			}
+		}
+		return "", barr, true
+	}
+	return "", barr, true
+}
+
 func (c *Cache) LPop(v resp.Value, mode string) (string, []resp.Value, bool) {
 	c.Mut.Lock()
 	defer c.Mut.Unlock()
