@@ -1,7 +1,7 @@
-<h1> KeyStore: A Redis-Server Clone </h1>
+<h1> KeyStore: A Redis-Server Implementation </h1>
 
 <h2> Info </h2>
-KeyStore is a mock-up redis server that is capable of managing concurrent clients on a network. It utilizes a custom implementation of the RESP protocol over TCP which works natively with redis-cli. 
+KeyStore is a thread safe key-value store that is capable of managing concurrent clients on a network. It utilizes a custom implementation of the RESP protocol over TCP which works natively with redis-cli. 
 
 <h3>Supported Commands (Jan 2026)</h3>
 
@@ -13,6 +13,12 @@ KeyStore is a mock-up redis server that is capable of managing concurrent client
 | `HGET` | `GET a value associated with a key's field` | 
 | `EXPIRE` | `Add a TTL (seconds) to an existing key` | 
 | `DEL` | `DELETE a key from KeyStore` | 
+| `INCR` | `INCREMENT a key value` | 
+| `DECR` | `DECREMENT a key value` |
+| `RPUSH` | `RIGHT PUSH on a list within the cache` | 
+| `LPUSH` | `LEFT PUSH on a list within the cache` | 
+| `RPOP` | `RIGHT POP on a list within the cache` | 
+| `LPOP` | `LEFT POP on a list within the cache` | 
 | `PING/HELLO` | `PING the server and get a demo response` | 
 
 
